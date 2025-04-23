@@ -1,0 +1,108 @@
+---
+import { ChevronUp } from "lucide-react";
+import { buttonVariants, cn } from "@/lib/utils";
+---
+
+<script>
+  const SCROLL_THRESHOLD = 300; // Increased threshold for better visibility
+
+  class BackToTop {
+    private button: HTMLButtonElement | null = null;
+
+    constructor() {
+      this.init();
+    }
+
+    private init() {
+      // Run immediately on page load, without waiting for event
+      this.setupButton();
+
+      // Also run when Astro view transitions occur
+      document.addEventListener("astro:page-load", () => {
+        this.setupButton();
+      });
+
+      document.addEventListener("astro:after-swap", () => {
+        window.scrollTo({ top: 0, behavior: "instant" });
+        // Re-setup button after view transition
+        setTimeout(() => {
+          this.setupButton();
+        }, 100);
+      });
+    }
+
+    private setupButton() {
+      this.button = document.querySelector("#back-to-top");
+      if (!this.button) return;
+
+      this.addEventListeners();
+      // Force immediate check
+      this.updateButtonVisibility();
+
+      // Debug visibility
+      console.log("Back to top button initialized", {
+        button: this.button,
+        scrollY: window.scrollY,
+        visible: window.scrollY > SCROLL_THRESHOLD,
+      });
+    }
+
+    private addEventListeners() {
+      if (!this.button) return;
+
+      // Remove existing listeners to prevent duplicates
+      const newButton = this.button.cloneNode(true) as HTMLButtonElement;
+      if (this.button.parentNode) {
+        this.button.parentNode.replaceChild(newButton, this.button);
+        this.button = newButton;
+      }
+
+      // Add scroll listener with immediate check
+      window.addEventListener("scroll", () => {
+        this.updateButtonVisibility();
+      });
+
+      this.button.addEventListener("click", () => {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      });
+    }
+
+    private updateButtonVisibility() {
+      if (!this.button) return;
+
+      const shouldShow = window.scrollY > SCROLL_THRESHOLD;
+
+      // More direct opacity control instead of just scale
+      if (shouldShow) {
+        this.button.classList.remove("opacity-0", "pointer-events-none");
+        this.button.classList.add("opacity-100", "pointer-events-auto");
+      } else {
+        this.button.classList.add("opacity-0", "pointer-events-none");
+        this.button.classList.remove("opacity-100", "pointer-events-auto");
+      }
+    }
+  }
+
+  // Initialize the back to top functionality
+  document.addEventListener("DOMContentLoaded", () => {
+    new BackToTop();
+  });
+
+  // Also initialize immediately in case DOMContentLoaded already fired
+  new BackToTop();
+</script>
+
+<button
+  id="back-to-top"
+  aria-label="Scroll back to top"
+  title="Scroll back to top"
+  class={cn(
+    buttonVariants({ size: "icon" }),
+    "fixed right-4 bottom-[4rem] z-50 rounded-full cursor-pointer duration-150 transition-transform lg:left-[calc(100vw/2+400px)]"
+  )}
+>
+  <ChevronUp className="h-5 w-5" />
+</button>
