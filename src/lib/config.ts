@@ -4,5 +4,5 @@ export const SITE = {
   profile: "https://vuckele.dev",
   desc: "Personal portfolio of Vuk Branković, a professional software engineer specializing in web development.",
   title: "Vuk Branković - Full-Stack Developer",
-  ogImage: "/public/social-thumbnail.jpg",
+  ogImage: "/social-thumbnail.jpg",
 } as const;
