@@ -6,7 +6,7 @@ import react from "@astrojs/react";
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://louai.site',
+  site: 'https://vuckele.dev',
   integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
